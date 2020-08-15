@@ -1057,18 +1057,115 @@
     });
 
     var socket = io("<%= room.ip %>:3000");
+    //LED
+    $("#bathSw").change(function () {
+      socket.emit("balight", $(this)[0].checked);
+    });
+    $("#doorLiSw").change(function () {
+      socket.emit("dolight", $(this)[0].checked);
+    });
+    $("#set1Sw").change(function () {
+      socket.emit("set1light", $(this)[0].checked);
+    });
+    $("#set2Sw").change(function () {
+      socket.emit("set2light", $(this)[0].checked);
+    });
+    socket.on("blight", (data) => {
+      if (data) {
+        $("#bathSw").prop("checked", true);
+        $("#bathLi").html("Bath Light is turn on");
+        $("#bathLi,#iconBath").addClass("text-warning");
+      } else {
+        $("#bathSw").prop("checked", false);
+        $("#bathLi").html("Bath Light is turn off");
+        $("#bathLi,#iconBath").removeClass("text-warning");
+      }
+    });
+    socket.on("dlight", (data) => {
+      if (data) {
+        $("#doorLiSw").prop("checked", true);
+        $("#doorLi").html("Door Light is turn on");
+        $("#doorLi,#iconDo").addClass("text-warning");
+      } else {
+        $("#doorLiSw").prop("checked", false);
+        $("#doorLi").html("Door Light is turn off");
+        $("#doorLi,#iconDo").removeClass("text-warning");
+      }
+    });
+    socket.on("s1light", (data) => {
+      if (data) {
+        $("#set1Sw").prop("checked", true);
+        $("#setLi1").html("Setting 1 Light is turn on");
+        $("#setLi1,#iconSet1").addClass("text-warning");
+      } else {
+        $("#set1Sw").prop("checked", false);
+        $("#setLi1").html("Setting 1 Light is turn off");
+        $("#setLi1,#iconSet1").removeClass("text-warning");
+      }
+    });
+    socket.on("s2light", (data) => {
+      if (data) {
+        $("#set2Sw").prop("checked", true);
+        $("#setLi2").html("Setting 2 Light is turn on");
+        $("#setLi2,#iconSet2").addClass("text-warning");
+      } else {
+        $("#set2Sw").prop("checked", false);
+        $("#setLi2").html("Setting 2 Light is turn off");
+        $("#setLi2,#iconSet2").removeClass("text-warning");
+      }
+    });
+
+    //END LED
+
+    // Fan, PUMP, OUTER, DECO
+    $("#pumpSw").change(function () {
+      console.log("pump.....", $(this)[0].checked);
+      socket.emit("pump", $(this)[0].checked);
+    });
+    $("#fanSw").change(function () {
+      console.log("fan.....", $(this)[0].checked);
+      socket.emit("fan", $(this)[0].checked);
+    });
     $("#lightSw").change(function () {
       socket.emit("light", $(this)[0].checked);
-    });
-    $("#doorSw").change(function () {
-      socket.emit("door", $(this)[0].checked);
     });
     $("#outerSw").change(function () {
       socket.emit("outer", $(this)[0].checked);
     });
+    //END F,P,O,D
+
+    $("#doorSw").change(function () {
+      console.log("calllll door");
+      socket.emit("door", $(this)[0].checked);
+    });
     $("#securitySw").change(function () {
       socket.emit("security", $(this)[0].checked);
     });
+
+    socket.on("pump", (data) => {
+      if (data) {
+        $("#pumpSw").prop("checked", true);
+        $("#pumpSt").html("Pump is turn on");
+        $("#pumpSt,#iconP").addClass("text-warning");
+      } else {
+        $("#pumpSw").prop("checked", false);
+        $("#pumpSt").html("Pump is turn off");
+        $("#pumpSt,#iconP").removeClass("text-warning");
+      }
+    });
+
+    socket.on("fan", (data) => {
+      if (data) {
+        $("#fanSw").prop("checked", true);
+        $("#fanSt").html("Fan is turn on");
+        $("#fanSt,#iconF").addClass("text-warning");
+      } else {
+        $("#fanSw").prop("checked", false);
+        $("#fanSt").html("Fan is turn off");
+        $("#fanSt,#iconF").removeClass("text-warning");
+      }
+    });
+
     socket.on("light", (data) => {
       if (data) {
         $("#lightSw").prop("checked", true);
@@ -1157,6 +1254,57 @@
     socket.on("flame", (data) => {
       console.log("flame", data);
       $myflame.changeValue(data);
+    });
+
+    socket.on("window0", (data) => {
+      if (data) {
+        $("#win0c").removeClass("bg-warning");
+        $("#win0c").addClass("bg-success");
+        $("#win0s").html("Close");
+      } else {
+        $("#win0c").removeClass("bg-success");
+        $("#win0c").addClass("bg-warning");
+        $("#win0s").html("Open");
+      }
+    });
+
+    socket.on("window1", (data) => {
+      if (data) {
+        $("#win1c").removeClass("bg-warning");
+        $("#win1c").addClass("bg-success");
+        $("#win1s").html("Close");
+      } else {
+        $("#win1c").removeClass("bg-success");
+        $("#win1c").addClass("bg-warning");
+        $("#win1s").html("Open");
+      }
+    });
+    var rf = false;
+    $("#name").focus(function () {
+      rf = true;
+    });
+    $("#name").blur(function () {
+      rf = false;
+    });
+
+    socket.on("rfid", (data) => {
+      console.log(data, rf);
+      if (rf) {
+        $("#rfid").val(data);
+      } else {
+        $.ajax({
+          url: "/checkrfid",
+          data: { number: "<%= room.number %>", rfid: data },
+          type: "POST",
+          success: function (result) {
+            if (result.status) {
+              socket.emit("doorR", true);
+            } else {
+              alert("Card is incorrect");
+            }
+          },
+        });
+      }
     });
   </script>
 </html>
