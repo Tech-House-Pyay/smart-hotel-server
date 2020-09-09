@@ -37,17 +37,17 @@
             <span class="pull-right">
               <img
                 class="/img-circle img-user media-object"
-                src="/img/av1.png"
+                src="/img/av3.png"
                 alt="Profile Picture"
               />
             </span>
-            <div class="username hidden-xs"><%= locals.admin.name %></div>
+            <div class="username hidden-xs">Room <%= locals.user.number %></div>
           </a>
           <div class="dropdown-menu dropdown-menu-right with-arrow">
             <!-- User dropdown menu -->
             <ul class="head-list">
               
-                <a href="/logout"> <i class="fa fa-sign-out fa-fw"></i> Logout </a>
+                <a href="/users/logout"> <i class="fa fa-sign-out fa-fw"></i> Logout </a>
               </li>
             </ul>
           </div>
@@ -70,7 +70,7 @@
           ><span class="icon-bar"></span>
         </button>
       </div>
-      <div id="defaultmenu" class="navbar-collapse collapse">
+      <!-- <div id="defaultmenu" class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
           <li class="dropdown">
             <a href="/home"> Home </a>
@@ -85,7 +85,7 @@
             </ul>
           </li>
         </ul>
-      </div>
+      </div> -->
     </nav>
   </div>
 </header>

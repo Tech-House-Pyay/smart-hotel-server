@@ -142,7 +142,7 @@
     <div id="container" class="effect mainnav-full">
       <!--NAVBAR-->
       <!--===================================================-->
-      <% include partials/header %>
+      <% include partials/headerU %>
       <!--===================================================-->
       <!--END NAVBAR-->
       <div class="boxed">
@@ -283,22 +283,17 @@
                   <div class="panel-body">
                     <div class="row">
                       <div class="col-md-3 col-sm-3 col-xs-2">
-                        <i
-                          class="fa fa-folder-open text-success fa-3x"
-                          id="iconM"
-                        ></i>
+                        <i class="fa fa-folder fa-3x" id="iconD"></i>
                       </div>
 
                       <div class="col-md-6 col-sm-6 col-xs-5 text-center">
-                        <h4 id="motionSt" class="text-success">
-                          Motion service is on
-                        </h4>
+                        <h4 id="doorSt">Door is close</h4>
                       </div>
                       <div class="col-md-3 col-sm-3 col-xs-5">
                         <div class="box-inline mar-rgt">
                           <!--Switchery : Checked by default-->
                           <!--===================================================-->
-                          <input id="motionSw" type="checkbox" checked />
+                          <input id="doorSw" type="checkbox" />
                           <!--===================================================-->
                         </div>
                       </div>
@@ -894,7 +889,7 @@
     var mypumpSw = new Switchery($("#pumpSw")[0]);
     var myfanSw = new Switchery($("#fanSw")[0]);
     var mylightSw = new Switchery($("#lightSw")[0]);
-    var mymotionSw = new Switchery($("#motionSw")[0]);
+    var mydoorSw = new Switchery($("#doorSw")[0]);
     var myouterSw = new Switchery($("#outerSw")[0]);
     var mysecuritySw = new Switchery($("#securitySw")[0]);
     var mydoorLiSw = new Switchery($("#doorLiSw")[0]);
@@ -1144,9 +1139,9 @@
     });
     //END F,P,O,D
 
-    $("#motionSw").change(function () {
+    $("#doorSw").change(function () {
       console.log("calllll door");
-      socket.emit("motion", $(this)[0].checked);
+      socket.emit("door", $(this)[0].checked);
     });
     $("#securitySw").change(function () {
       socket.emit("security", $(this)[0].checked);
@@ -1211,19 +1206,19 @@
         $("#securitySt,#iconS").addClass("text-danger");
       }
     });
-    socket.on("motion", (data) => {
+    socket.on("door", (data) => {
       if (data) {
-        setSwitchery(mymotionSw, true);
-        $("#motionSt").html("Motion service is on");
-        $("#motionSt,#iconM").addClass("text-success");
-        $("#iconM").removeClass("fa-folder");
-        $("#iconM").addClass("fa-folder-open");
+        $("#doorSw").prop("checked", true);
+        $("#doorSt").html("Door is open");
+        $("#doorSt,#iconD").addClass("text-success");
+        $("#iconD").removeClass("fa-folder");
+        $("#iconD").addClass("fa-folder-open");
       } else {
-        setSwitchery(mymotionSw, false);
-        $("#motionSt").html("Motion service is off");
-        $("#motionSt,#iconM").removeClass("text-success");
-        $("#iconM").removeClass("fa-folder-open");
-        $("#iconM").addClass("fa-folder");
+        $("#doorSw").prop("checked", false);
+        $("#doorSt").html("Door is close");
+        $("#doorSt,#iconD").removeClass("text-success");
+        $("#iconD").removeClass("fa-folder-open");
+        $("#iconD").addClass("fa-folder");
       }
     });
     var minH = 50;
@@ -1316,71 +1311,21 @@
         });
       }
     });
-    var audio = new Audio("/mp3/alarm.mp3");
-    var audio2 = new Audio("/mp3/smoke.mp3");
-    var audio3 = new Audio("/mp3/smoke2.mp3");
     socket.on("alarm", (data) => {
       if (data.index == "0") {
-        audio2.play();
-        swal(
-          {
-            title: "Gas Alarm",
-            text: "Gas level reach at " + data.value,
-            type: "error",
-          },
-          function () {
-            audio2.pause();
-          }
-        );
+        swal({
+          title: "Gas Alarm",
+          text: "Gas level reach at " + data.value,
+          type: "error",
+        });
       } else if (data.index == "1") {
-        audio3.play();
-        swal(
-          {
-            title: "Flame Alarm",
-            text: "Flame level reach at " + data.value,
-            type: "error",
-          },
-          function () {
-            audio3.pause();
-          }
-        );
-      } else if (data.index == "2") {
-        audio.play();
-        swal(
-          {
-            title: "Window Alarm",
-            text: "Window 0 is open",
-            type: "error",
-          },
-          function () {
-            audio.pause();
-          }
-        );
-      } else if (data.index == "3") {
-        audio.play();
-        swal(
-          {
-            title: "Window Alarm",
-            text: "Window 1 is open",
-            type: "error",
-          },
-          function () {
-            audio.pause();
-          }
-        );
-      } else if (data.index == "4") {
-        audio.play();
-        swal(
-          {
-            title: "Thief Alarm",
-            text: "Someone move in room",
-            type: "error",
-          },
-          function () {
-            audio.pause();
-          }
-        );
+        swal({
+          title: "Flame Alarm",
+          text: "Flame level reach at " + data.value,
+          type: "error",
+        });
       }
+      console.log(data);
     });
     socket.on("button", (data) => {
       console.log("get call", data);
